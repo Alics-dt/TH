@@ -83,7 +83,7 @@ def main(args):
                 para.requires_grad_(False)
 
     pg = [p for p in model.parameters() if p.requires_grad]
-    optimizer = optim.SGD(pg, lr=args.lr, momentum=0.6, weight_decay=5E-5)
+    optimizer = optim.SGD(pg, lr=args.lr, momentum=0.6, weight_decay=1E-1)
     # Scheduler https://arxiv.org/pdf/1812.01187.pdf
     lf = lambda x: ((1 + math.cos(x * math.pi / args.epochs)) / 2) * (1 - args.lrf) + args.lrf  # cosine
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)

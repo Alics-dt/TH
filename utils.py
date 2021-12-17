@@ -131,9 +131,9 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
         loss = loss_function(pred, labels.to(device))
         loss.backward()
         mean_loss = (mean_loss * step + loss.detach()) / (step + 1)  # update mean losses
-        if a == 1:
-            mean_loss_last = mean_loss
-            a = 0
+        #if a == 1:
+            #mean_loss_last = mean_loss
+            #a = 0
         pred = torch.max(pred, dim=1)[1]
         sum_num += torch.eq(pred, labels.to(device)).sum()
         data_loader.desc = "[epoch {}] mean loss {}".format(epoch, round(mean_loss.item(), 3))
@@ -142,12 +142,11 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
             print('WARNING: non-finite loss, ending training ', loss)
             sys.exit(1)
 
-        puanduan = mean_loss - mean_loss_last
+        #puanduan = mean_loss - mean_loss_last
 
-        if puanduan < 0.02:
-            optimizer.step()
-
-        mean_loss_last = mean_loss
+        #if puanduan < 0.12:
+        optimizer.step()
+        #mean_loss_last = mean_loss
         optimizer.zero_grad()
 
     return mean_loss.item(), sum_num.item() / total_num

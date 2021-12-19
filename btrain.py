@@ -83,7 +83,7 @@ def main(args):
                 para.requires_grad_(False)
 
     pg = [p for p in model.parameters() if p.requires_grad]
-    optimizer = optim.SGD(pg, lr=args.lr, momentum=0.6, weight_decay=1E-1)
+    optimizer = optim.SGD(pg, lr=args.lr, momentum=0.6, weight_decay=1E-4)
     # Scheduler https://arxiv.org/pdf/1812.01187.pdf
     lf = lambda x: ((1 + math.cos(x * math.pi / args.epochs)) / 2) * (1 - args.lrf) + args.lrf  # cosine
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
@@ -95,7 +95,6 @@ def main(args):
                                     data_loader=train_loader,
                                     device=device,
                                     epoch=epoch)
-        print("\n")
         print("[epoch {}] train_accuracy: {}".format(epoch, round(train_acc, 3)))
         scheduler.step()
 
@@ -146,14 +145,14 @@ if __name__ == '__main__':
 '''
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_classes', type=int, default=4)
-    parser.add_argument('--epochs', type=int, default=300)
+    parser.add_argument('--num_classes', type=int, default=0)
+    parser.add_argument('--epochs', type=int, default=120)
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=0.1)
     parser.add_argument('--lrf', type=float, default=0.0001)
 
     # 数据集所在根目录
-    parser.add_argument('--data-path', type=str, default="E:\project\\network\datasets\yumi\data\\train")
+    parser.add_argument('--data-path', type=str, default="")
 
     parser.add_argument('--weights', type=str, default='',
                         help='initial weights path')

@@ -145,14 +145,14 @@ if __name__ == '__main__':
 '''
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_classes', type=int, default=0)
-    parser.add_argument('--epochs', type=int, default=120)
+    parser.add_argument('--num_classes', type=int, default=1000)
+    parser.add_argument('--epochs', type=int, default=300)
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=0.1)
     parser.add_argument('--lrf', type=float, default=0.0001)
 
     # 数据集所在根目录
-    parser.add_argument('--data-path', type=str, default="")
+    parser.add_argument('--data-path', type=str, default="D:\dataset\\train")
 
     parser.add_argument('--weights', type=str, default='',
                         help='initial weights path')

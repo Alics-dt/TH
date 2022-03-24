@@ -11,7 +11,7 @@ import torch.optim.lr_scheduler as lr_scheduler
 from a_model_stage2 import ShuffleNetV2
 from my_dataset import MyDataSet
 from utils import read_split_data, train_one_epoch, evaluate
-
+from model_v2 import MobileNetV2
 
 def main(args):
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
@@ -63,9 +63,11 @@ def main(args):
 
     # 如果存在预训练权重则载入
     #model = shufflenet_v2_x1_5(num_classes=args.num_classes).to(device)
-    model = ShuffleNetV2(num_classes=args.num_classes,
+    '''model = ShuffleNetV2(num_classes=args.num_classes,
                          stages_repeats=[3, 7, 3],
                          stages_out_channels=[24, 176, 352, 704, 1024]).to(device)
+    '''
+    model = MobileNetV2(num_classes=args.num_classes).to(device)
     if args.weights != "":
         if os.path.exists(args.weights):
             weights_dict = torch.load(args.weights, map_location=device)
@@ -145,16 +147,16 @@ if __name__ == '__main__':
 '''
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_classes', type=int, default=1000)
-    parser.add_argument('--epochs', type=int, default=300)
+    parser.add_argument('--num_classes', type=int, default=24)
+    parser.add_argument('--epochs', type=int, default=30)
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=0.1)
     parser.add_argument('--lrf', type=float, default=0.0001)
 
     # 数据集所在根目录
-    parser.add_argument('--data-path', type=str, default="D:\dataset\\train")
+    parser.add_argument('--data-path', type=str, default="D:\dataset\\fruits-360-original-size\\fruits-360-original-size\Training")
 
-    parser.add_argument('--weights', type=str, default='',
+    parser.add_argument('--weights', type=str, default='MobileNetV2.pth',
                         help='initial weights path')
     parser.add_argument('--freeze-layers', type=bool, default=False)
     parser.add_argument('--device', default='cuda', help='device id (i.e. 0 or 0,1 or cpu)')

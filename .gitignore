@@ -8,3 +8,4 @@ __pycache__/my_dataset.cpython-36.pyc
 *.pyc
 .idea/workspace.xml
 *.pyc
+*.0

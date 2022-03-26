@@ -68,6 +68,7 @@ def main(args):
                          stages_out_channels=[24, 176, 352, 704, 1024]).to(device)
     '''
     model = MobileNetV2(num_classes=args.num_classes).to(device)
+    '''
     if args.weights != "":
         if os.path.exists(args.weights):
             weights_dict = torch.load(args.weights, map_location=device)
@@ -76,6 +77,7 @@ def main(args):
             print(model.load_state_dict(load_weights_dict, strict=False))
         else:
             raise FileNotFoundError("not found weights file: {}".format(args.weights))
+    '''
 
     # 是否冻结权重
     if args.freeze_layers:

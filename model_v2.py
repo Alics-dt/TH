@@ -1,7 +1,6 @@
 from torch import nn
 import torch
-
-
+from torchstat import stat
 def _make_divisible(ch, divisor=8, min_ch=None):
     """
     This function is taken from the original tf repo.
@@ -19,12 +18,14 @@ def _make_divisible(ch, divisor=8, min_ch=None):
 
 
 class ConvBNReLU(nn.Sequential):
-    def __init__(self, in_channel, out_channel, kernel_size=3, stride=1, groups=1):
+    def __init__(self, in_channel, out_channel, kernel_size=7, stride=1, groups=1):
         padding = (kernel_size - 1) // 2
         super(ConvBNReLU, self).__init__(
             nn.Conv2d(in_channel, out_channel, kernel_size, stride, padding, groups=groups, bias=False),
             nn.BatchNorm2d(out_channel),
-            nn.ReLU6(inplace=True)
+            #nn.LazyBatchNorm2d(out_channel),
+            #nn.ReLU6(inplace=True),
+            nn.GELU()
         )
 
 
@@ -37,13 +38,14 @@ class InvertedResidual(nn.Module):
         layers = []
         if expand_ratio != 1:
             # 1x1 pointwise conv
-            layers.append(ConvBNReLU(in_channel, hidden_channel, kernel_size=1))
+            layers.append(ConvBNReLU(in_channel, in_channel, kernel_size=3, groups=in_channel))
         layers.extend([
             # 3x3 depthwise conv
-            ConvBNReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel),
+            ConvBNReLU(in_channel, hidden_channel, kernel_size = 1,stride=stride),
             # 1x1 pointwise conv(linear)
             nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False),
-            nn.BatchNorm2d(out_channel),
+            #nn.BatchNorm2d(out_channel),
+            nn.LazyBatchNorm2d(out_channel)
         ])
 
         self.conv = nn.Sequential(*layers)
@@ -66,12 +68,12 @@ class MobileNetV2(nn.Module):
             # t, c, n, s
             # t:相较于输入通道的升维倍率；c:特征矩阵的深度channel；n:重复的次数；s:步距
             [1, 16, 1, 1],
-            [6, 24, 2, 2],
-            [6, 32, 3, 2],
-            [6, 64, 4, 2],
-            [6, 96, 3, 1],
-            [6, 160, 3, 2],
-            [6, 320, 1, 1],
+            #[6, 24, 1, 2],
+            [1, 32, 1, 2],
+            #[6, 64, 1, 2],
+            [1, 96, 1, 1],
+            [3, 160, 3, 2],
+            [1, 320, 1, 1],
         ]
 
         features = []
@@ -92,10 +94,10 @@ class MobileNetV2(nn.Module):
         # building classifier
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.classifier = nn.Sequential(
-            nn.Dropout(0.2),
+            #nn.Dropout(0.2),
             nn.Linear(last_channel, num_classes)
         )
-
+        '''
         # weight initialization
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -108,10 +110,14 @@ class MobileNetV2(nn.Module):
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.zeros_(m.bias)
-
+        '''
     def forward(self, x):
         x = self.features(x)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
+
+
+#model = MobileNetV2()
+#stat(model, (3, 224, 224))

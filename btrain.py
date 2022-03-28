@@ -147,6 +147,7 @@ if __name__ == '__main__':
 
     main(opt)
 '''
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_classes', type=int, default=24)
@@ -157,7 +158,6 @@ if __name__ == '__main__':
 
     # 数据集所在根目录
     parser.add_argument('--data-path', type=str, default="D:\dataset\\fruits-360-original-size\\fruits-360-original-size\Training")
-
     parser.add_argument('--weights', type=str, default='',#MobileNetV2.pth
                         help='initial weights path')
     parser.add_argument('--freeze-layers', type=bool, default=False)
